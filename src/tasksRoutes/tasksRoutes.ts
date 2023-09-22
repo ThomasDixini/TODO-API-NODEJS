@@ -24,10 +24,13 @@ export async function tasksRoutes(app: FastifyInstance) {
   });
 
   app.get("/", async (req: FastifyRequest, reply: FastifyReply) => {
+    const tasks = await k.select("*").from("tasks");
+
     return (
       reply.status(200),
       {
         message: "Task listed successfully",
+        tasks,
       }
     );
   });
