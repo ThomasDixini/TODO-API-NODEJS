@@ -1,5 +1,5 @@
 import fastify from "fastify";
-import { tasksRoutes } from "./tasksRoutes/tasksRoutes";
+import { tasksRoutes } from "../tasksRoutes/tasksRoutes";
 
 const app = fastify();
 
