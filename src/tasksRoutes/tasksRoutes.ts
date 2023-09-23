@@ -46,4 +46,12 @@ export async function tasksRoutes(app: FastifyInstance) {
       path: "http://localhost:3333/tasks/d1984a85-9f47-4f2a-8c66-a326fa04904d",
     });
   });
+  app.delete("/:id", async (req: FastifyRequest, reply: FastifyReply) => {
+    const id = req.params as UUID;
+    await k("tasks").where(id).delete();
+
+    return reply.status(200).send({
+      message: "Task deleted successfully",
+    });
+  });
 }
