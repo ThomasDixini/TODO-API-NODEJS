@@ -1,4 +1,4 @@
-import { randomUUID } from "crypto";
+import { UUID, randomUUID } from "crypto";
 import { FastifyRequest, FastifyInstance, FastifyReply } from "fastify";
 import { k } from "../database/config";
 interface Task {
@@ -33,5 +33,17 @@ export async function tasksRoutes(app: FastifyInstance) {
         tasks,
       }
     );
+  });
+
+  app.patch("/:id", async (req: FastifyRequest, reply: FastifyReply) => {
+    const id = req.params as UUID;
+    await k("tasks").where(id).update({
+      updated_at: new Date(),
+    });
+
+    return reply.status(200).send({
+      message: "Task updated successfully",
+      path: "http://localhost:3333/tasks/d1984a85-9f47-4f2a-8c66-a326fa04904d",
+    });
   });
 }
