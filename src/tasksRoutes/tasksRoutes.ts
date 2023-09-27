@@ -24,8 +24,20 @@ export async function tasksRoutes(app: FastifyInstance) {
   });
 
   app.get("/", async (req: FastifyRequest, reply: FastifyReply) => {
-    const tasks = await k.select("*").from("tasks");
+    const { title, description } = req.query as Task;
 
+    if (!title && !description) {
+      const tasks = await k.select("*").from("tasks");
+      reply.status(200).send({
+        message: "Task created successfully",
+        tasks,
+      });
+    }
+
+    const tasks = await k.select("*").from("tasks").where({
+      title,
+      description,
+    });
     return (
       reply.status(200),
       {
