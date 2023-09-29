@@ -49,15 +49,24 @@ export async function tasksRoutes(app: FastifyInstance) {
     );
   });
 
-  app.patch("/:id", async (req: FastifyRequest, reply: FastifyReply) => {
+  app.put("/:id", async (req: FastifyRequest, reply: FastifyReply) => {
     const id = req.params as UUID;
-    await k("tasks").where(id).update({
-      updated_at: new Date(),
-    });
+    const { title, description } = req.query as Task;
+
+    if (title || description) {
+      await k("tasks").where(id).update({
+        title,
+        description,
+        updated_at: new Date(),
+      });
+
+      return reply.status(200).send({
+        message: "Task updated successfully",
+      });
+    }
 
     return reply.status(200).send({
-      message: "Task updated successfully",
-      path: "http://localhost:3333/tasks/d1984a85-9f47-4f2a-8c66-a326fa04904d",
+      message: "The return is 'ok' but the task dont have anything for update",
     });
   });
   app.delete("/:id", async (req: FastifyRequest, reply: FastifyReply) => {
