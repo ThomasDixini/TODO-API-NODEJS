@@ -26,18 +26,20 @@ export async function tasksRoutes(app: FastifyInstance) {
   app.get("/", async (req: FastifyRequest, reply: FastifyReply) => {
     const { title, description } = req.query as Task;
 
-    if (!title && !description) {
-      const tasks = await k.select("*").from("tasks");
+    if (title || description) {
+      const tasks = await k
+        .select("*")
+        .from("tasks")
+        .whereILike("title", `%${title}%`)
+        .orWhereILike("description", `%${description}%`);
+
       reply.status(200).send({
         message: "Task created successfully",
         tasks,
       });
     }
 
-    const tasks = await k.select("*").from("tasks").where({
-      title,
-      description,
-    });
+    const tasks = await k.select("*").from("tasks");
     return (
       reply.status(200),
       {
