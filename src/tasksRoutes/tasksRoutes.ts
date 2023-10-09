@@ -15,7 +15,7 @@ export async function tasksRoutes(app: FastifyInstance) {
       updated_at: new Date(),
     };
 
-    db.insertInto(task);
+    db.insertInto("tasks", task);
 
     return reply.status(201).send("Task created successfully");
   });
@@ -66,6 +66,7 @@ export async function tasksRoutes(app: FastifyInstance) {
       message: "The return is 'ok' but the task dont have anything for update",
     });
   });
+
   app.delete("/:id", async (req: FastifyRequest, reply: FastifyReply) => {
     const id = req.params as UUID;
     await k("tasks").where(id).delete();
@@ -74,4 +75,31 @@ export async function tasksRoutes(app: FastifyInstance) {
       message: "Task deleted successfully",
     });
   });
+
+  app.patch(
+    "/:id/complete",
+    async (req: FastifyRequest, reply: FastifyReply) => {
+      const id = req.params as UUID;
+      const isComplete = await k("tasks")
+        .where(id)
+        .whereNotNull("finished_at")
+        .select("finished_at")
+        .first();
+
+      if (isComplete != null) {
+        await k("tasks").where(id).update({
+          finished_at: null,
+        });
+        return reply.status(200).send({ message: "Task reinicialized" });
+      }
+
+      await k("tasks").where(id).update({
+        finished_at: new Date(),
+      });
+
+      return reply.status(200).send({
+        message: "Task has been marked as complete successfully",
+      });
+    },
+  );
 }
