@@ -1,7 +1,15 @@
 import { UUID, randomUUID } from "crypto";
 import { FastifyRequest, FastifyInstance, FastifyReply } from "fastify";
 import { k } from "../database/config";
-import { Task, db } from "../classes/databaseClass";
+
+interface Task {
+  id: UUID;
+  title: string;
+  description: string;
+  created_at: Date;
+  updated_at: Date;
+  finished_at?: Date;
+}
 
 export async function tasksRoutes(app: FastifyInstance) {
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
@@ -15,7 +23,7 @@ export async function tasksRoutes(app: FastifyInstance) {
       updated_at: new Date(),
     };
 
-    db.insertInto("tasks", task);
+    await k("tasks").insert(task);
 
     return reply.status(201).send("Task created successfully");
   });
