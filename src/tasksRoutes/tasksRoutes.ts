@@ -14,25 +14,21 @@ interface Task {
 }
 
 export async function tasksRoutes(app: FastifyInstance) {
-  app.post(
-    "/",
-    { preHandler: [checkBodyExist] },
-    async (req: FastifyRequest, reply: FastifyReply) => {
-      const { title, description } = req.body as Task;
+  app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
+    const { title, description } = req.body as Task;
 
-      const task: Task = {
-        id: randomUUID(),
-        title,
-        description,
-        created_at: new Date(),
-        updated_at: new Date(),
-      };
+    const task: Task = {
+      id: randomUUID(),
+      title,
+      description,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
 
-      await k("tasks").insert(task);
+    await k("tasks").insert(task);
 
-      return reply.status(201).send("Task created successfully");
-    },
-  );
+    return reply.status(201).send("Task created successfully");
+  });
 
   app.get(
     "/",

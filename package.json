@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx src/server/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "teste": "set NODE_ENV=test && tsx src/server/server.ts",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -17,17 +18,21 @@
     "dotenv": "^16.3.1",
     "fastify": "^4.23.2",
     "knex": "^2.5.1",
-    "mysql2": "^3.6.1"
+    "mysql2": "^3.6.1",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
     "@rocketseat/eslint-config": "^2.1.0",
+    "@types/supertest": "^2.0.15",
     "@typescript-eslint/eslint-plugin": "^6.7.2",
     "@typescript-eslint/parser": "^6.7.2",
     "eslint": "^8.49.0",
     "eslint-plugin-prettier": "^5.0.0",
     "prettier": "3.0.3",
+    "supertest": "^6.3.3",
     "ts-node": "^10.9.1",
     "tsx": "^3.12.10",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^0.34.6"
   }
 }
