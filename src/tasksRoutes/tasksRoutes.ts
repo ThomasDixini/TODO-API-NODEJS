@@ -2,7 +2,6 @@ import { UUID, randomUUID } from "crypto";
 import { FastifyRequest, FastifyInstance, FastifyReply } from "fastify";
 import { k } from "../database/config";
 import { checkIdExists } from "../middlewares/check-if-id-exists";
-import { checkBodyExist } from "../middlewares/check-body-exist";
 
 interface Task {
   id: UUID;
@@ -13,9 +12,14 @@ interface Task {
   finished_at?: Date;
 }
 
+interface TaskBody {
+  title: string;
+  description: string;
+}
+
 export async function tasksRoutes(app: FastifyInstance) {
   app.post("/", async (req: FastifyRequest, reply: FastifyReply) => {
-    const { title, description } = req.body as Task;
+    const { title, description } = req.body as TaskBody;
 
     const task: Task = {
       id: randomUUID(),
@@ -30,39 +34,35 @@ export async function tasksRoutes(app: FastifyInstance) {
     return reply.status(201).send("Task created successfully");
   });
 
-  app.get(
-    "/",
-    { preHandler: [checkBodyExist] },
-    async (req: FastifyRequest, reply: FastifyReply) => {
-      const { title, description } = req.query as Task;
+  app.get("/", async (req: FastifyRequest, reply: FastifyReply) => {
+    const { title, description } = req.query as Task;
 
-      if (title && description) {
-        const tasks = await k
-          .select("*")
-          .from("tasks")
-          .whereILike("title", `%${title}%`)
-          .andWhereILike("description", `%${description}%`);
+    if (title && description) {
+      const tasks = await k
+        .select("*")
+        .from("tasks")
+        .whereILike("title", `%${title}%`)
+        .andWhereILike("description", `%${description}%`);
 
-        reply.status(200).send({
-          message: "Task listed successfully",
-          tasks,
-        });
+      reply.status(200).send({
+        message: "Task listed successfully",
+        tasks,
+      });
+    }
+
+    const tasks = await k.select("*").from("tasks");
+    return (
+      reply.status(200),
+      {
+        message: "Tasks listed successfully",
+        tasks,
       }
-
-      const tasks = await k.select("*").from("tasks");
-      return (
-        reply.status(200),
-        {
-          message: "Tasks listed successfully",
-          tasks,
-        }
-      );
-    },
-  );
+    );
+  });
 
   app.put(
     "/:id",
-    { preHandler: [checkIdExists, checkBodyExist] },
+    { preHandler: [checkIdExists] },
     async (req: FastifyRequest, reply: FastifyReply) => {
       const id = req.params as UUID;
       const { title, description } = req.query as Task;
